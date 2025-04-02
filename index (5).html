@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GoodDeed - Share Positive Content</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --primary-bg: #000000;
+            --accent-color: #9C27B0;
+            --text-color: #FFFFFF;
+            --card-bg: #1A1A1A;
+            --ad-bg: #2A2A2A;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--primary-bg);
+            color: var(--text-color);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo i {
+            color: var(--accent-color);
+            font-size: 28px;
+        }
+        
+        .logo h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--accent-color);
+        }
+        
+        .hamburger {
+            background: none;
+            border: none;
+            color: var(--text-color);
+            font-size: 24px;
+            cursor: pointer;
+        }
+        
+        .menu {
+            position: fixed;
+            top: 0;
+            right: -300px;
+            width: 300px;
+            height: 100%;
+            background-color: var(--card-bg);
+            padding: 20px;
+            transition: right 0.3s ease;
+            z-index: 1000;
+            overflow-y: auto;
+        }
+        
+        .menu.active {
+            right: 0;
+        }
+        
+        .close-btn {
+            background: none;
+            border: none;
+            color: var(--text-color);
+            font-size: 24px;
+            margin-bottom: 20px;
+            cursor: pointer;
+        }
+        
+        .menu-content {
+            display: none;
+        }
+        
+        .menu-content.active {
+            display: block;
+        }
+        
+        .auth-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .auth-form input {
+            padding: 10px;
+            border: 1px solid #444;
+            border-radius: 5px;
+            background-color: #333;
+            color: var(--text-color);
+        }
+        
+        .auth-form button {
+            padding: 10px;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        .publisher-panel {
+            margin-top: 20px;
+            display: none;
+        }
+        
+        .publisher-panel.active {
+            display: block;
+        }
+        
+        .publisher-panel button {
+            padding: 8px 15px;
+            background-color: #333;
+            color: var(--text-color);
+            border: none;
+            border-radius: 5px;
+            margin-right: 10px;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+        
+        .video-card {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s ease;
+        }
+        
+        .video-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .thumbnail-container {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%;
+            overflow: hidden;
+        }
+        
+        .thumbnail-container img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+        }
+        
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        
+        .video-info {
+            padding: 15px;
+        }
+        
+        .video-info h3 {
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+        
+        .video-info p {
+            color: #AAAAAA;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+        
+        .video-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+        }
+        
+        .video-actions button {
+            background: none;
+            border: none;
+            color: var(--accent-color);
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .ad-space {
+            background-color: var(--ad-bg);
+            border-radius: 10px;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 30px;
+            min-height: 250px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 2px dashed #444;
+        }
+        
+        .ad-space h3 {
+            color: var(--accent-color);
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+        
+        .ad-space p {
+            color: #AAAAAA;
+            font-style: italic;
+            margin-bottom: 15px;
+        }
+        
+        .ad-space img {
+            max-width: 100%;
+            max-height: 150px;
+            border-radius: 8px;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .thumbnail-upload {
+            margin: 15px 0;
+            text-align: center;
+        }
+        
+        .thumbnail-preview {
+            width: 100%;
+            max-height: 200px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-top: 10px;
+            display: none;
+        }
+        
+        .upload-area {
+            border: 2px dashed #444;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 15px;
+        }
+        
+        .upload-area:hover {
+            border-color: var(--accent-color);
+            background-color: rgba(156, 39, 176, 0.05);
+        }
+        
+        .upload-area i {
+            font-size: 40px;
+            color: var(--accent-color);
+            margin-bottom: 10px;
+        }
+        
+        .upload-area p {
+            margin-bottom: 5px;
+        }
+        
+        .upload-area small {
+            color: #777;
+            font-size: 12px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 14px;
+            color: #CCC;
+        }
+        
+        .form-group input, 
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #444;
+            border-radius: 5px;
+            background-color: #333;
+            color: var(--text-color);
+        }
+        
+        .form-group textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+        
+        .submit-btn {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        
+        .submit-btn:hover {
+            background-color: #7B1FA2;
+        }
+        
+        .timestamp {
+            font-size: 12px;
+            color: #777;
+            margin-top: 5px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .url-preview {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #333;
+            border-radius: 5px;
+            font-size: 14px;
+            word-break: break-all;
+        }
+        
+        .unsupported-warning {
+            color: #ff9800;
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <i class="fas fa-hand-holding-heart"></i>
+                <h1>GoodDeed</h1>
+            </div>
+            <button class="hamburger" id="hamburger">
+                <i class="fas fa-bars"></i>
+            </button>
+        </header>
+        
+        <div class="menu" id="menu">
+            <button class="close-btn" id="closeBtn">
+                <i class="fas fa-times"></i>
+            </button>
+            
+            <div class="menu-content" id="loginForm">
+                <h2>Publisher Login</h2>
+                <form class="auth-form" id="loginFormElement">
+                    <input type="password" id="password" placeholder="Enter password" required>
+                    <button type="submit">Login</button>
+                </form>
+            </div>
+            
+            <div class="menu-content" id="logoutSection">
+                <button id="logoutBtn">Logout</button>
+            </div>
+            
+            <div class="publisher-panel" id="publisherPanel">
+                <h2>Publisher Panel</h2>
+                <button id="addVideoBtn">Add Video</button>
+                
+                <form id="videoForm" class="hidden">
+                    <div class="form-group">
+                        <label for="videoTitle">Video Title</label>
+                        <input type="text" id="videoTitle" placeholder="Enter video title" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="videoUrl">Content URL</label>
+                        <input type="text" id="videoUrl" placeholder="Enter any URL (video, article, image, etc.)" required>
+                        <div id="urlPreview" class="url-preview hidden"></div>
+                        <div id="unsupportedWarning" class="unsupported-warning">
+                            <i class="fas fa-exclamation-triangle"></i> This URL might not support embedding, but it will be saved as a link.
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="videoDescription">Description</label>
+                        <textarea id="videoDescription" placeholder="Enter description"></textarea>
+                    </div>
+                    
+                    <div class="thumbnail-upload">
+                        <label>Thumbnail Image (optional)</label>
+                        <div class="upload-area" id="uploadArea">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <p>Click to upload thumbnail</p>
+                            <small>Recommended size: 1280x720px</small>
+                            <input type="file" id="thumbnailInput" accept="image/*" style="display: none;">
+                        </div>
+                        <img id="thumbnailPreview" class="thumbnail-preview" alt="Thumbnail preview">
+                    </div>
+                    
+                    <button type="submit" class="submit-btn">Add Content</button>
+                </form>
+            </div>
+        </div>
+        
+        <main id="videoFeed">
+            <!-- Content will be loaded here -->
+        </main>
+    </div>
+
+    <script>
+        // DOM Elements
+        const hamburger = document.getElementById('hamburger');
+        const menu = document.getElementById('menu');
+        const closeBtn = document.getElementById('closeBtn');
+        const loginForm = document.getElementById('loginForm');
+        const loginFormElement = document.getElementById('loginFormElement');
+        const logoutSection = document.getElementById('logoutSection');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const publisherPanel = document.getElementById('publisherPanel');
+        const addVideoBtn = document.getElementById('addVideoBtn');
+        const videoForm = document.getElementById('videoForm');
+        const videoFeed = document.getElementById('videoFeed');
+        const uploadArea = document.getElementById('uploadArea');
+        const thumbnailInput = document.getElementById('thumbnailInput');
+        const thumbnailPreview = document.getElementById('thumbnailPreview');
+        const videoUrlInput = document.getElementById('videoUrl');
+        const urlPreview = document.getElementById('urlPreview');
+        const unsupportedWarning = document.getElementById('unsupportedWarning');
+        
+        // App State
+        const PASSWORD = 'gooddeed#192006';
+        let isAuthenticated = false;
+        let videos = JSON.parse(localStorage.getItem('gooddeed-videos')) || [];
+        
+        // Initialize
+        checkAuth();
+        renderVideos();
+        
+        // Event Listeners
+        hamburger.addEventListener('click', () => {
+            menu.classList.add('active');
+        });
+        
+        closeBtn.addEventListener('click', () => {
+            menu.classList.remove('active');
+        });
+        
+        loginFormElement.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const password = document.getElementById('password').value;
+            
+            if (password === PASSWORD) {
+                isAuthenticated = true;
+                localStorage.setItem('gooddeed-authenticated', 'true');
+                checkAuth();
+                document.getElementById('password').value = '';
+                alert('Login successful!');
+            } else {
+                alert('Incorrect password');
+            }
+        });
+        
+        logoutBtn.addEventListener('click', () => {
+            isAuthenticated = false;
+            localStorage.removeItem('gooddeed-authenticated');
+            checkAuth();
+            videoForm.classList.add('hidden');
+        });
+        
+        addVideoBtn.addEventListener('click', () => {
+            videoForm.classList.toggle('hidden');
+            if (!videoForm.classList.contains('hidden')) {
+                videoForm.reset();
+                thumbnailPreview.style.display = 'none';
+                thumbnailPreview.src = '';
+                uploadArea.style.display = 'block';
+                urlPreview.classList.add('hidden');
+                unsupportedWarning.style.display = 'none';
+            }
+        });
+        
+        // URL input validation and preview
+        videoUrlInput.addEventListener('input', () => {
+            const url = videoUrlInput.value.trim();
+            if (url) {
+                try {
+                    // Basic URL validation
+                    new URL(url);
+                    urlPreview.textContent = url;
+                    urlPreview.classList.remove('hidden');
+                    
+                    // Check if it's a supported platform
+                    const { platform } = extractVideoInfo(url);
+                    if (!platform && !isImageUrl(url)) {
+                        unsupportedWarning.style.display = 'block';
+                    } else {
+                        unsupportedWarning.style.display = 'none';
+                    }
+                } catch (e) {
+                    urlPreview.classList.add('hidden');
+                    unsupportedWarning.style.display = 'none';
+                }
+            } else {
+                urlPreview.classList.add('hidden');
+                unsupportedWarning.style.display = 'none';
+            }
+        });
+        
+        // Thumbnail upload handling
+        uploadArea.addEventListener('click', () => {
+            thumbnailInput.click();
+        });
+        
+        thumbnailInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    thumbnailPreview.src = event.target.result;
+                    thumbnailPreview.style.display = 'block';
+                    uploadArea.style.display = 'none';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+        
+        videoForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const title = document.getElementById('videoTitle').value;
+            const url = document.getElementById('videoUrl').value.trim();
+            const description = document.getElementById('videoDescription').value;
+            const customThumbnail = thumbnailPreview.src || '';
+            
+            // Basic URL validation
+            try {
+                new URL(url);
+            } catch (e) {
+                alert('Please enter a valid URL');
+                return;
+            }
+            
+            // Extract video info if possible
+            const { videoId, platform } = extractVideoInfo(url);
+            
+            // Get automatic thumbnail if no custom thumbnail was uploaded
+            let thumbnail = customThumbnail;
+            if (!customThumbnail) {
+                if (platform) {
+                    thumbnail = await getAutomaticThumbnail(videoId, platform);
+                } else if (isImageUrl(url)) {
+                    thumbnail = url;
+                } else {
+                    thumbnail = await getWebsiteThumbnail(url);
+                }
+            }
+            
+            const newContent = {
+                id: Date.now(),
+                title,
+                url,
+                videoId: videoId || null,
+                platform: platform || 'website',
+                description,
+                thumbnail,
+                timestamp: new Date().toISOString(),
+                isImage: isImageUrl(url)
+            };
+            
+            // Add new content to beginning of array (most recent first)
+            videos.unshift(newContent);
+            saveVideos();
+            renderVideos();
+            
+            // Reset form
+            videoForm.reset();
+            videoForm.classList.add('hidden');
+            thumbnailPreview.style.display = 'none';
+            thumbnailPreview.src = '';
+            uploadArea.style.display = 'block';
+            urlPreview.classList.add('hidden');
+            unsupportedWarning.style.display = 'none';
+        });
+        
+        // Functions
+        function checkAuth() {
+            const storedAuth = localStorage.getItem('gooddeed-authenticated');
+            isAuthenticated = storedAuth === 'true';
+            
+            if (isAuthenticated) {
+                loginForm.classList.remove('active');
+                logoutSection.classList.add('active');
+                publisherPanel.classList.add('active');
+            } else {
+                loginForm.classList.add('active');
+                logoutSection.classList.remove('active');
+                publisherPanel.classList.remove('active');
+            }
+        }
+        
+        function extractVideoInfo(url) {
+            let videoId = '';
+            let platform = '';
+            
+            // YouTube
+            if (url.includes('youtube.com') || url.includes('youtu.be')) {
+                videoId = extractYouTubeId(url);
+                platform = 'youtube';
+            } 
+            // Vimeo
+            else if (url.includes('vimeo.com')) {
+                videoId = extractVimeoId(url);
+                platform = 'vimeo';
+            }
+            // Dailymotion
+            else if (url.includes('dailymotion.com') || url.includes('dai.ly')) {
+                videoId = extractDailymotionId(url);
+                platform = 'dailymotion';
+            }
+            // Facebook
+            else if (url.includes('facebook.com') || url.includes('fb.watch')) {
+                videoId = extractFacebookId(url);
+                platform = 'facebook';
+            }
+            // TikTok
+            else if (url.includes('tiktok.com')) {
+                videoId = extractTikTokId(url);
+                platform = 'tiktok';
+            }
+            // Instagram
+            else if (url.includes('instagram.com')) {
+                videoId = extractInstagramId(url);
+                platform = 'instagram';
+            }
+            
+            return { videoId, platform };
+        }
+        
+        function isImageUrl(url) {
+            return /\.(jpeg|jpg|gif|png|webp|bmp|svg)$/i.test(url);
+        }
+        
+        async function getWebsiteThumbnail(url) {
+            // For non-video URLs, we can try to get a screenshot using a service
+            // Note: In a real app, you'd need a backend service for this
+            // For now, we'll return a placeholder with the domain name
+            try {
+                const domain = new URL(url).hostname.replace('www.', '');
+                return `https://via.placeholder.com/1280x720/333/FFFFFF?text=${encodeURIComponent(domain)}`;
+            } catch {
+                return 'https://via.placeholder.com/1280x720?text=Content+Preview';
+            }
+        }
+        
+        function renderVideos() {
+            videoFeed.innerHTML = '';
+            
+            const sortedVideos = [...videos].sort((a, b) => 
+                new Date(b.timestamp) - new Date(a.timestamp));
+            
+            sortedVideos.forEach((video, index) => {
+                if (index > 0 && index % 2 === 0) {
+                    const adSpace = document.createElement('div');
+                    adSpace.className = 'ad-space';
+                    adSpace.innerHTML = `
+                        <h3>Advertisement</h3>
+                        <p>Support our platform by viewing our sponsors</p>
+                        <img src="https://via.placeholder.com/300x150?text=Advertisement" alt="Advertisement">
+                    `;
+                    videoFeed.appendChild(adSpace);
+                }
+                
+                const videoCard = document.createElement('div');
+                videoCard.className = 'video-card';
+                videoCard.dataset.id = video.id;
+                
+                let embedHtml = '';
+                if (video.platform === 'youtube') {
+                    embedHtml = `<iframe src="https://www.youtube.com/embed/${video.videoId}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+                } else if (video.platform === 'vimeo') {
+                    embedHtml = `<iframe src="https://player.vimeo.com/video/${video.videoId}" frameborder="0" allow="autoplay; fullscreen" allowfullscreen></iframe>`;
+                } else if (video.platform === 'dailymotion') {
+                    embedHtml = `<iframe src="https://www.dailymotion.com/embed/video/${video.videoId}" frameborder="0" allowfullscreen></iframe>`;
+                } else if (video.platform === 'facebook') {
+                    embedHtml = `<iframe src="https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(video.url)}" frameborder="0" allowfullscreen></iframe>`;
+                } else if (video.platform === 'tiktok') {
+                    embedHtml = `<iframe src="https://www.tiktok.com/embed/v2/${video.videoId}" frameborder="0" allowfullscreen></iframe>`;
+                } else if (video.platform === 'instagram') {
+                    embedHtml = `<iframe src="https://www.instagram.com/p/${video.videoId}/embed" frameborder="0" allowfullscreen></iframe>`;
+                } else if (video.isImage) {
+                    embedHtml = `<img src="${video.url}" alt="${video.title}" style="width:100%;height:100%;object-fit:contain;background:#000;">`;
+                } else {
+                    // For unsupported URLs, show a clickable link
+                    embedHtml = `
+                        <div style="height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;text-align:center;">
+                            <i class="fas fa-external-link-alt" style="font-size:48px;color:${getDomainColor(video.url)};margin-bottom:20px;"></i>
+                            <h3 style="margin-bottom:10px;">${video.title}</h3>
+                            <p style="margin-bottom:20px;color:#AAA;">${new URL(video.url).hostname}</p>
+                            <a href="${video.url}" target="_blank" style="padding:10px 20px;background-color:${getDomainColor(video.url)};color:white;border-radius:5px;text-decoration:none;">Visit Website</a>
+                        </div>
+                    `;
+                }
+                
+                const date = new Date(video.timestamp);
+                const formattedDate = date.toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric'
+                });
+                
+                videoCard.innerHTML = `
+                    ${video.thumbnail ? `
+                        <div class="thumbnail-container">
+                            <img src="${video.thumbnail}" alt="${video.title}">
+                        </div>
+                        <div class="video-container hidden" id="embed-${video.id}">
+                            ${embedHtml}
+                        </div>
+                    ` : `
+                        <div class="video-container">
+                            ${embedHtml}
+                        </div>
+                    `}
+                    <div class="video-info">
+                        <h3>${video.title}</h3>
+                        <p>${video.description}</p>
+                        <div class="timestamp">
+                            <i class="far fa-clock"></i>
+                            <span>Posted on ${formattedDate}</span>
+                        </div>
+                        <div class="video-actions">
+                            <button class="share-btn">
+                                <i class="fas fa-share"></i>
+                                <span>Share</span>
+                            </button>
+                            ${isAuthenticated ? `
+                                <button class="delete-btn">
+                                    <i class="fas fa-trash"></i>
+                                    <span>Delete</span>
+                                </button>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+                
+                videoFeed.appendChild(videoCard);
+                
+                // Add click event to thumbnail to play video (if applicable)
+                if (video.thumbnail && (video.platform || video.isImage)) {
+                    const thumbnailContainer = videoCard.querySelector('.thumbnail-container');
+                    const embedContainer = videoCard.querySelector(`#embed-${video.id}`);
+                    
+                    if (thumbnailContainer && embedContainer) {
+                        thumbnailContainer.addEventListener('click', () => {
+                            thumbnailContainer.classList.add('hidden');
+                            embedContainer.classList.remove('hidden');
+                            
+                            // For iframes, we need to add autoplay
+                            if (embedContainer.querySelector('iframe')) {
+                                const iframe = embedContainer.querySelector('iframe');
+                                const src = iframe.src;
+                                if (!src.includes('autoplay=1')) {
+                                    iframe.src = src.includes('?') ? 
+                                        `${src}&autoplay=1` : 
+                                        `${src}?autoplay=1`;
+                                }
+                            }
+                        });
+                    }
+                }
+            });
+            
+            // Add event listeners to delete buttons
+            if (isAuthenticated) {
+                document.querySelectorAll('.delete-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const videoCard = e.target.closest('.video-card');
+                        const videoId = parseInt(videoCard.dataset.id);
+                        deleteVideo(videoId);
+                    });
+                });
+            }
+            
+            // Add event listeners to share buttons
+            document.querySelectorAll('.share-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const videoCard = e.target.closest('.video-card');
+                    const videoId = parseInt(videoCard.dataset.id);
+                    const video = videos.find(v => v.id === videoId);
+                    if (video) {
+                        shareVideo(video);
+                    }
+                });
+            });
+        }
+        
+        function getDomainColor(url) {
+            try {
+                const domain = new URL(url).hostname;
+                const colors = {
+                    'youtube.com': '#FF0000',
+                    'vimeo.com': '#1AB7EA',
+                    'dailymotion.com': '#0066DC',
+                    'facebook.com': '#1877F2',
+                    'tiktok.com': '#000000',
+                    'instagram.com': '#E4405F',
+                    'twitter.com': '#1DA1F2',
+                    'reddit.com': '#FF4500',
+                    'linkedin.com': '#0A66C2'
+                };
+                
+                for (const [key, value] of Object.entries(colors)) {
+                    if (domain.includes(key)) {
+                        return value;
+                    }
+                }
+                
+                // Default purple color
+                return '#9C27B0';
+            } catch {
+                return '#9C27B0';
+            }
+        }
+        
+        // Video ID extraction functions
+        function extractYouTubeId(url) {
+            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+            const match = url.match(regExp);
+            return (match && match[2].length === 11) ? match[2] : null;
+        }
+        
+        function extractVimeoId(url) {
+            const regExp = /^.*(vimeo\.com\/)((channels\/[A-z]+\/)|(groups\/[A-z]+\/videos\/))?([0-9]+)/;
+            const match = url.match(regExp);
+            return match ? match[5] : null;
+        }
+        
+        function extractDailymotionId(url) {
+            const regExp = /^.+dailymotion.com\/(video|hub)\/([^_]+)[^#]*(#video=([^_&]+))?/;
+            const match = url.match(regExp);
+            return match ? (match[4] || match[2]) : null;
+        }
+        
+        function extractFacebookId(url) {
+            const regExp = /(?:https?:\/\/)?(?:www\.|m\.|mobile\.)?(?:facebook\.com|fb\.watch)\/(?:[^\/]+\/videos\/|video\.php\?v=|watch\/\?v=)(\d+)/;
+            const match = url.match(regExp);
+            return match ? match[1] : null;
+        }
+        
+        function extractTikTokId(url) {
+            const regExp = /(?:https?:\/\/)?(?:www\.)?tiktok\.com\/@.+\/video\/(\d+)/;
+            const match = url.match(regExp);
+            return match ? match[1] : null;
+        }
+        
+        function extractInstagramId(url) {
+            const regExp = /(?:https?:\/\/)?(?:www\.)?instagram\.com\/p\/([^\/]+)/;
+            const match = url.match(regExp);
+            return match ? match[1] : null;
+        }
+        
+        async function getAutomaticThumbnail(videoId, platform) {
+            try {
+                if (platform === 'youtube') {
+                    const qualities = ['maxresdefault', 'hqdefault', 'mqdefault', 'sddefault'];
+                    for (const quality of qualities) {
+                        const url = `https://img.youtube.com/vi/${videoId}/${quality}.jpg`;
+                        if (await checkImageExists(url)) {
+                            return url;
+                        }
+                    }
+                    return `https://img.youtube.com/vi/${videoId}/default.jpg`;
+                } else if (platform === 'vimeo') {
+                    const response = await fetch(`https://vimeo.com/api/v2/video/${videoId}.json`);
+                    const data = await response.json();
+                    if (data && data[0] && data[0].thumbnail_large) {
+                        return data[0].thumbnail_large;
+                    }
+                } else if (platform === 'dailymotion') {
+                    return `https://www.dailymotion.com/thumbnail/video/${videoId}`;
+                }
+                return 'https://via.placeholder.com/1280x720?text=No+Thumbnail';
+            } catch (error) {
+                console.error('Error fetching automatic thumbnail:', error);
+                return 'https://via.placeholder.com/1280x720?text=No+Thumbnail';
+            }
+        }
+        
+        function checkImageExists(url) {
+            return new Promise((resolve) => {
+                const img = new Image();
+                img.onload = () => resolve(true);
+                img.onerror = () => resolve(false);
+                img.src = url;
+            });
+        }
+        
+        function deleteVideo(id) {
+            if (confirm('Are you sure you want to delete this content?')) {
+                videos = videos.filter(video => video.id !== id);
+                saveVideos();
+                renderVideos();
+            }
+        }
+        
+        function shareVideo(video) {
+            if (navigator.share) {
+                navigator.share({
+                    title: video.title,
+                    text: video.description,
+                    url: video.url
+                }).catch(err => {
+                    console.log('Error sharing:', err);
+                    copyToClipboard(video.url);
+                });
+            } else {
+                copyToClipboard(video.url);
+            }
+        }
+        
+        function copyToClipboard(text) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+            alert('Link copied to clipboard!');
+        }
+        
+        function saveVideos() {
+            localStorage.setItem('gooddeed-videos', JSON.stringify(videos));
+        }
+    </script>
+</body>
+</html>
